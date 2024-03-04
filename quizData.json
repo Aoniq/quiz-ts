@@ -1,0 +1,38 @@
+{
+    "intro": {
+        "title": "Hoofdsteden quiz",
+        "text": "Welkom bij de hoofdsteden quiz" 
+    },
+    "questions": [
+        { "type": "MULTIPLECHOICE",
+          "time": 10000,
+          "question": "Wat is de hoofdstad van Madagascar?",
+          "answers": [
+            "Antananarivo",
+            "Benin",
+            "Madagascar",
+            "Sri Lanka"
+          ],
+          "correctAnswer": 0  
+        },
+        { "type": "Open",
+          "time": 10000,
+          "question": "Wat is de hoofdstad van Frankrijk?",
+          "answers": [
+            "Parijs",
+            "Paris"
+          ]  
+        },
+        { "type": "MULTIPLECHOICE",
+          "time": 10000,
+          "question": "Welke hoofstad heeft de meeste inwoners?",
+          "answers": [
+            "Berlijn",
+            "Londen",
+            "Mexico city",
+            "Istandbul"
+          ],
+          "correctAnswer": 2  
+        }
+    ]
+}
