@@ -1,38 +1,119 @@
 {
-    "intro": {
-        "title": "Hoofdsteden quiz",
-        "text": "Welkom bij de hoofdsteden quiz" 
-    },
-    "questions": [
-        { "type": "MULTIPLECHOICE",
-          "time": 10000,
-          "question": "Wat is de hoofdstad van Madagascar?",
+  "intro": {
+      "title": "Formule 1 Quiz",
+      "text": "Welkom bij de Formule 1 Quiz!"
+  },
+  "questions": [
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Welke coureur heeft de meeste wereldkampioenschappen in de Formule 1 gewonnen?",
           "answers": [
-            "Antananarivo",
-            "Benin",
-            "Madagascar",
-            "Sri Lanka"
+              "Lewis Hamilton",
+              "Michael Schumacher",
+              "Ayrton Senna",
+              "Sebastian Vettel"
           ],
-          "correctAnswer": 0  
-        },
-        { "type": "Open",
-          "time": 10000,
-          "question": "Wat is de hoofdstad van Frankrijk?",
+          "correctAnswer": 1
+      },
+      {
+          "type": "Open",
+          "time": 15000,
+          "question": "In welk jaar werd de eerste officiële Formule 1-race gehouden?",
           "answers": [
-            "Parijs",
-            "Paris"
-          ]  
-        },
-        { "type": "MULTIPLECHOICE",
-          "time": 10000,
-          "question": "Welke hoofstad heeft de meeste inwoners?",
+              "1946",
+              "1947",
+              "1950"
+          ]
+      },
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Hoeveel punten krijgt de coureur die de snelste ronde van de race rijdt?",
           "answers": [
-            "Berlijn",
-            "Londen",
-            "Mexico city",
-            "Istandbul"
+              "1 punt",
+              "2 punten",
+              "Geen punten"
           ],
-          "correctAnswer": 2  
-        }
-    ]
+          "correctAnswer": 0
+      },
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Wie is de jongste coureur die ooit een Formule 1-race heeft gewonnen?",
+          "answers": [
+              "Sebastian Vettel",
+              "Max Verstappen",
+              "Fernando Alonso",
+              "Lewis Hamilton"
+          ],
+          "correctAnswer": 1
+      },
+      {
+          "type": "Open",
+          "time": 15000,
+          "question": "Hoeveel circuits staan momenteel op de Formule 1-kalender?",
+          "answers": [
+              "20",
+              "21",
+              "22"
+          ]
+      },
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Welk team heeft de meeste constructeurskampioenschappen gewonnen?",
+          "answers": [
+              "Ferrari",
+              "McLaren",
+              "Mercedes",
+              "Williams"
+          ],
+          "correctAnswer": 0
+      },
+      {
+          "type": "Open",
+          "time": 15000,
+          "question": "Wat is het record voor het grootste aantal overwinningen in één seizoen?",
+          "answers": [
+              "17",
+              "18",
+              "19"
+          ]
+      },
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Hoeveel keer heeft Lewis Hamilton het wereldkampioenschap gewonnen?",
+          "answers": [
+              "5 keer",
+              "6 keer",
+              "7 keer",
+              "8 keer"
+          ],
+          "correctAnswer": 2
+      },
+      {
+          "type": "MULTIPLECHOICE",
+          "time": 15000,
+          "question": "Wat is de naam van het circuit waar de Grand Prix van Monaco wordt gehouden?",
+          "answers": [
+              "Circuit de Barcelona-Catalunya",
+              "Autódromo Hermanos Rodríguez",
+              "Circuit de Spa-Francorchamps",
+              "Circuit de Monaco"
+          ],
+          "correctAnswer": 3
+      },
+      {
+          "type": "Open",
+          "time": 15000,
+          "question": "Hoeveel kilometer lang is het circuit van Spa-Francorchamps?",
+          "answers": [
+              "6,7 km",
+              "7,0 km",
+              "7,4 km"
+          ]
+      }
+  ]
 }

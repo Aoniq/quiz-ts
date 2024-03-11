@@ -99,18 +99,40 @@ export default function Quiz() {
   useEffect(() => {
     if (quizData && timerInterval === null && currentQuestionIndex < quizData.questions.length && !showModal) {
       setTimerInterval(setInterval(() => {
-        setTimeRemaining(prevTime => prevTime - 1000);
-      }, 1000));
+        setTimeRemaining(prevTime => prevTime - 100);
+      }, 100));
     }
   }, [currentQuestionIndex, timerInterval, quizData, showModal]);
 
   useEffect(() => {
-    if (timeRemaining === 0) {
+    if (timeRemaining === 0 && currentQuestionIndex === quizData.questions.length - 1) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+      let correct = 0;
+      let wrong = 0;
+      quizData.questions.forEach((question, index) => {
+        if (answers[`question_${index}`] !== undefined) {
+          if (question.type === 'MULTIPLECHOICE' && parseInt(answers[`question_${index}`]) === question.correctAnswer) {
+            correct++;
+          } else if (question.type === 'Open' && answers[`question_${index}`].toLowerCase() === question.answers[0].toLowerCase()) {
+            correct++;
+          } else {
+            wrong++;
+          }
+        } else {
+          wrong++;
+        }
+      });
+      setCorrectCount(correct);
+      setWrongCount(wrong);
+      setShowModal(true);
+    } else if (timeRemaining === 0) {
       clearInterval(timerInterval);
       setTimerInterval(null);
       handleNext();
     }
   }, [timeRemaining]);
+  
 
   if (!quizData) {
     return <div>Loading...</div>;
@@ -164,10 +186,12 @@ export default function Quiz() {
               </div>
             )}
 
-            {currentQuestion && (
-              <progress value={quizData.questions[currentQuestionIndex].time - timeRemaining} max={quizData.questions[currentQuestionIndex].time}></progress>
-            )}
-            
+{currentQuestion && (
+    <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+        <progress className="w-full h-full bg-blue-500 bar" value={quizData.questions[currentQuestionIndex].time - timeRemaining} max={quizData.questions[currentQuestionIndex].time}></progress>
+    </div>
+)}
+    
             {currentQuestionIndex < quizData.questions.length - 1 && (
               <button type="button" onClick={handleNext} className="bg-blue-500 text-white py-2 px-4 rounded-md">Next</button>
             )}
