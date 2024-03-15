@@ -3,14 +3,31 @@ import React, { useState, useEffect } from 'react';
 import { getQuizData } from '@/utils/quizService';
 
 export default function Quiz() {
-  const [quizData, setQuizData] = useState(null);
+
+  interface Question {
+    type: string;
+    time: number;
+    question: string;
+    answers: string[];
+    correctAnswer?: number;
+  }
+
+  type QuizData = {
+    intro: {
+      title: string;
+      text: string;
+    };
+    questions: Question[];
+  }
+  const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(null);
-  const [timerInterval, setTimerInterval] = useState(null);
+  const [timerInterval, setTimerInterval] = useState<number | NodeJS.Timeout | null>(null);
+
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,14 +40,14 @@ export default function Quiz() {
     fetchData();
   }, [currentQuestionIndex]);
 
-  const handleMultipleChoiceChange = (question, option) => {
+  const handleMultipleChoiceChange = (question: string, option: number) => {
     setAnswers(prevAnswers => ({
       ...prevAnswers,
       [question]: option
     }));
   };
 
-  const handleOpenAnswerChange = (event) => {
+  const handleOpenAnswerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setAnswers(prevAnswers => ({
       ...prevAnswers,
@@ -43,15 +60,19 @@ export default function Quiz() {
     setCurrentQuestionIndex(prevIndex => prevIndex + 1);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!quizData) {
+      return; // Exit early if quizData is null
+    }
     let correct = 0;
     let wrong = 0;
     quizData.questions.forEach((question, index) => {
-      if (answers[`question_${index}`] !== undefined) {
-        if (question.type === 'MULTIPLECHOICE' && parseInt(answers[`question_${index}`]) === question.correctAnswer) {
+      const answerKey = `question_${index}` as keyof typeof answers;
+      if (answers[answerKey] !== undefined) {
+        if (question.type === 'MULTIPLECHOICE' && parseInt(answers[answerKey]) === question.correctAnswer) {
           correct++;
-        } else if (question.type === 'Open' && answers[`question_${index}`].toLowerCase() === question.answers[0].toLowerCase()) {
+        } else if (question.type === 'Open' && (answers[answerKey] as string).toLowerCase() === question.answers[0].toLowerCase()) {
           correct++;
         } else {
           wrong++;
@@ -69,7 +90,8 @@ export default function Quiz() {
       handleNext();
     }
   };
-
+   
+  
   const closeModal = () => {
     setShowModal(false);
     resetQuiz();
@@ -89,7 +111,7 @@ export default function Quiz() {
   };
 
   const resetTimer = () => {
-    clearInterval(timerInterval);
+    clearInterval(timerInterval as NodeJS.Timeout); // Explicitly cast timerInterval to NodeJS.Timeout
     setTimerInterval(null);
     if (quizData) {
       setTimeRemaining(quizData.questions[currentQuestionIndex].time ?? null);
@@ -99,22 +121,29 @@ export default function Quiz() {
   useEffect(() => {
     if (quizData && timerInterval === null && currentQuestionIndex < quizData.questions.length && !showModal) {
       setTimerInterval(setInterval(() => {
-        setTimeRemaining(prevTime => prevTime - 100);
+        setTimeRemaining(prevTime => {
+          if (prevTime !== null) {
+            return prevTime - 100;
+          }
+          return null;
+        });
       }, 100));
     }
   }, [currentQuestionIndex, timerInterval, quizData, showModal]);
+  
 
   useEffect(() => {
-    if (timeRemaining === 0 && currentQuestionIndex === quizData.questions.length - 1) {
-      clearInterval(timerInterval);
+    if (timeRemaining === 0 && quizData && currentQuestionIndex === quizData.questions.length - 1) {
+      clearInterval(timerInterval as NodeJS.Timeout); // Explicitly cast timerInterval to NodeJS.Timeout
       setTimerInterval(null);
       let correct = 0;
       let wrong = 0;
       quizData.questions.forEach((question, index) => {
-        if (answers[`question_${index}`] !== undefined) {
-          if (question.type === 'MULTIPLECHOICE' && parseInt(answers[`question_${index}`]) === question.correctAnswer) {
+        const answerKey = `question_${index}` as keyof typeof answers;
+        if (answers[answerKey] !== undefined) {
+          if (question.type === 'MULTIPLECHOICE' && parseInt(answers[answerKey]) === question.correctAnswer) {
             correct++;
-          } else if (question.type === 'Open' && answers[`question_${index}`].toLowerCase() === question.answers[0].toLowerCase()) {
+          } else if (question.type === 'Open' && (answers[answerKey] as string).toLowerCase() === question.answers[0].toLowerCase()) {
             correct++;
           } else {
             wrong++;
@@ -127,12 +156,12 @@ export default function Quiz() {
       setWrongCount(wrong);
       setShowModal(true);
     } else if (timeRemaining === 0) {
-      clearInterval(timerInterval);
+      clearInterval(timerInterval as NodeJS.Timeout); // Explicitly cast timerInterval to NodeJS.Timeout
       setTimerInterval(null);
       handleNext();
     }
-  }, [timeRemaining]);
-  
+  }, [timeRemaining, quizData, currentQuestionIndex, timerInterval, answers]);  
+   
 
   if (!quizData) {
     return <div>Loading...</div>;
@@ -156,40 +185,41 @@ export default function Quiz() {
           <h1 className="text-3xl font-bold mb-8">{quizData.intro.title}</h1>
           <p>{quizData.intro.text}</p>
           <form onSubmit={handleSubmit} className="flex flex-col items-start">
-            {currentQuestion && (
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold">{currentQuestion.question}</h2>
-                {currentQuestion.type === 'MULTIPLECHOICE' ? (
-                  <div className="flex flex-col">
-                    {currentQuestion.answers.map((answer, i) => (
-                      <label key={i}>
-                        <input 
-                          type="radio" 
-                          name={`question_${currentQuestionIndex}`} 
-                          value={i} 
-                          onChange={() => handleMultipleChoiceChange(`question_${currentQuestionIndex}`, i)} 
-                          checked={answers[`question_${currentQuestionIndex}`] === i} 
-                        />
-                        {answer}
-                      </label>
-                    ))}
-                  </div>
-                ) : (
-                  <input 
-                    type="text" 
-                    name={`question_${currentQuestionIndex}`} 
-                    onChange={handleOpenAnswerChange} 
-                    value={answers[`question_${currentQuestionIndex}`] || ''} 
-                    className="border border-gray-300 rounded-md p-2"
-                  />
-                )}
-              </div>
-            )}
+          {currentQuestion && (
+  <div className="mb-4">
+    <h2 className="text-lg font-semibold">{currentQuestion.question}</h2>
+    {currentQuestion.type === 'MULTIPLECHOICE' ? (
+  <div className="flex flex-col">
+    {currentQuestion.answers.map((answer, i) => (
+      <label key={i}>
+        <input 
+          type="radio" 
+          name={`question_${currentQuestionIndex}`} 
+          value={i} 
+          onChange={() => handleMultipleChoiceChange(`question_${currentQuestionIndex}`, i)} // Removed type assertion
+          checked={answers[`question_${currentQuestionIndex}` as keyof typeof answers] === i} // Type assertion
+        />
+        {answer}
+      </label>
+    ))}
+  </div>
+) : (
+
+      <input 
+        type="text" 
+        name={`question_${currentQuestionIndex}`} 
+        onChange={handleOpenAnswerChange} 
+        value={answers[`question_${currentQuestionIndex}` as keyof typeof answers] || ''} // Type assertion
+        className="border border-gray-300 rounded-md p-2"
+      />
+    )}
+  </div>
+)}
 
 {currentQuestion && (
-    <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden">
-        <progress className="w-full h-full bg-blue-500 bar" value={quizData.questions[currentQuestionIndex].time - timeRemaining} max={quizData.questions[currentQuestionIndex].time}></progress>
-    </div>
+  <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+    <progress className="w-full h-full bg-blue-500 bar" value={timeRemaining !== null ? quizData.questions[currentQuestionIndex].time - timeRemaining : 0} max={quizData.questions[currentQuestionIndex].time}></progress>
+  </div>
 )}
     
             {currentQuestionIndex < quizData.questions.length - 1 && (
